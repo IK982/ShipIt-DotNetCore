@@ -4,9 +4,19 @@
 Open the solution in Rider.
 Rider should automatically set up and install everything you'll need apart from the database connection!
 
+dotnet restore
+
 ### Setting up the Database.
 Create 2 new postgres databases - one for the main program and one for our test database.
+
+psql -U postgres 
+CREATE DATABASE my_database_name;
+\l to check it's there 
+
 Ask a team member for a dump of the production databases to create and populate your tables.
+
+\q to get out of postgres 
+psql -U postgres -d shipit_test -f 08-ShipIt-ConstructPostgresDatbase.sql; to run the file
 
 Then for each of the projects, add a `.env` file at the root of the project.
 That file should contain a property named `POSTGRES_CONNECTION_STRING`.

@@ -22,6 +22,26 @@ namespace ShipIt.Controllers
             _productRepository = productRepository;
         }
 
+
+        public List<String> GetGtins(IEnumerable<OrderLine> OrderLines){
+            // var gtins = new List<String>();
+            // foreach (var orderLine in OrderLines) {
+            //     gtins.Add(orderLine.gtin);
+            // }
+            // return gtins;
+
+            return OrderLines.Select(line => line.gtin).ToList();
+        }
+
+        public void CheckDuplicateGtins(List<String> gtins){
+            var uniqueGtins = gtins.Distinct().Count();
+
+            if(uniqueGtins < gtins.Count()){
+                throw new ValidationException(String.Format("Outbound order request contains duplicate product gtin: {0}", gtins));
+            }
+
+        }
+
         [HttpPost("")]
         public void Post([FromBody] OutboundOrderRequestModel request)
         {
@@ -79,6 +99,8 @@ namespace ShipIt.Controllers
                     continue;
                 }
 
+                //for earch item, if there is no stock then add to the list Product: {0}, no stock held
+
                 var item = stock[lineItem.ProductId];
                 if (lineItem.Quantity > item.held)
                 {
@@ -87,6 +109,7 @@ namespace ShipIt.Controllers
                             lineItem.Quantity));
                 }
             }
+            
 
             if (errors.Count > 0)
             {
