@@ -16,7 +16,7 @@ CREATE DATABASE my_database_name;
 Ask a team member for a dump of the production databases to create and populate your tables.
 
 \q to get out of postgres 
-psql -U postgres -d shipit_test -f 08-ShipIt-ConstructPostgresDatbase.sql; to run the file
+psql -U postgres -d shipit_main -f 08-ShipIt-ConstructPostgresDatbase.sql; to run the file
 
 Then for each of the projects, add a `.env` file at the root of the project.
 That file should contain a property named `POSTGRES_CONNECTION_STRING`.

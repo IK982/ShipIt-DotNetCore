@@ -36,7 +36,10 @@ namespace ShipIt.Controllers
 
             Log.Debug(String.Format("Found operations manager: {0}", operationsManager));
 
+            var startTime = DateTime.Now;
             var allStock = _stockRepository.GetStockByWarehouseId(warehouseId);
+            var EndTime = DateTime.Now - startTime;
+            Console.WriteLine(EndTime.Milliseconds);
 
             Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
             foreach (var stock in allStock)
