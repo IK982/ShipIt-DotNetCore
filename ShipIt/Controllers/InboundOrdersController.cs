@@ -28,26 +28,31 @@ namespace ShipIt.Controllers
         }
 
         [HttpGet("{warehouseId}")]
+
         public InboundOrderResponse Get([FromRoute] int warehouseId)
+
         {
+            var startTime = DateTime.Now;
             Log.Info("orderIn for warehouseId: " + warehouseId);
 
             var operationsManager = new Employee(_employeeRepository.GetOperationsManager(warehouseId));
 
             Log.Debug(String.Format("Found operations manager: {0}", operationsManager));
 
-            var startTime = DateTime.Now;
             var allStock = _stockRepository.GetStockByWarehouseId(warehouseId);
-            var EndTime = DateTime.Now - startTime;
-            Console.WriteLine(EndTime.Milliseconds);
 
             Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
             foreach (var stock in allStock)
             {
                 Product product = new Product(_productRepository.GetProductById(stock.ProductId));
-                if(stock.held < product.LowerThreshold && !product.Discontinued)
+                if (stock.held < product.LowerThreshold && !product.Discontinued)
                 {
+
+                    // var startTime = DateTime.Now;
                     Company company = new Company(_companyRepository.GetCompany(product.Gcp));
+                    // var EndTime = DateTime.Now - startTime;
+                    // Console.WriteLine(EndTime.Milliseconds);
+
 
                     var orderQuantity = Math.Max(product.LowerThreshold * 3 - stock.held, product.MinimumOrderQuantity);
 
@@ -56,7 +61,7 @@ namespace ShipIt.Controllers
                         orderlinesByCompany.Add(company, new List<InboundOrderLine>());
                     }
 
-                    orderlinesByCompany[company].Add( 
+                    orderlinesByCompany[company].Add(
                         new InboundOrderLine()
                         {
                             gtin = product.Gtin,
@@ -76,6 +81,8 @@ namespace ShipIt.Controllers
 
             Log.Info("Constructed inbound order");
 
+            var EndTime = DateTime.Now - startTime;
+            Console.WriteLine(EndTime);
             return new InboundOrderResponse()
             {
                 OperationsManager = operationsManager,
